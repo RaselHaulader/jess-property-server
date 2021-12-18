@@ -32,7 +32,7 @@ async function run() {
     // get 3 properties
     app.get('/allProperties3', async (req, res) => {
       const query = propertiesCollection.find({})
-      const result = await query.limit(3).toArray();
+      const result = await query.sort({ date: 'descending' }).limit(3).toArray();
       res.json(result)
     })
     // get 4 properties
@@ -48,6 +48,13 @@ async function run() {
       res.json(result)
     })
 
+    app.get('/chk', async (req, res) => {
+      const cursor = { category: 'For Sell' }
+      const query = propertiesCollection.find(cursor)
+      const result = await query.toArray();
+      res.json(result)
+    })
+
     // get selected property 
     app.get('/selectedItem/:id', async (req, res) => {
       const id = req.params.id
@@ -55,7 +62,64 @@ async function run() {
       const result = await propertiesCollection.findOne(query);
       res.json(result)
     })
-
+    // get selected property 
+    app.get('/users', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await propertiesCollection.findOne(query);
+      res.json(result)
+    })
+    // get selected property 
+    app.get('/UserWishList', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await propertiesCollection.find(query);
+      res.json(result)
+    })
+    // get selected property 
+    app.get('/usersRequest', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await propertiesCollection.find(query);
+      res.json(result)
+    })
+    
+    // get selected property 
+    app.get('/usersPost', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await propertiesCollection.find(query);
+      res.json(result)
+    })
+    // get selected property 
+    app.get('/allPost', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await propertiesCollection.find(query);
+      res.json(result)
+    })
+    // get selected property 
+    app.get('/allRequest', async (req, res) => {
+        const email = req.body
+        const query = { email : email }
+      const result = await propertiesCollection.find(query);
+      res.json(result)
+    })
+    // get selected property 
+    app.post('/allWishList', async (req, res) => {
+      const email = req.body
+      const query = { email : email }
+      const result = await propertiesCollection.find(query);
+      res.json(result)
+    })
+    // get selected property 
+    app.get('/allUser', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await propertiesCollection.find(query);
+      res.json(result)
+    })
+    
 
 
   } finally {
