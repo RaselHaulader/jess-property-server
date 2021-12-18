@@ -41,9 +41,18 @@ async function run() {
       const result = await query.limit(4).toArray();
       res.json(result)
     })
+    // get all property
     app.get('/allProperties', async (req, res) => {
       const query = propertiesCollection.find({})
       const result = await query.toArray();
+      res.json(result)
+    })
+
+    // get selected property 
+    app.get('/selectedItem/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await propertiesCollection.findOne(query);
       res.json(result)
     })
 
