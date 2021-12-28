@@ -21,6 +21,7 @@ async function run() {
     const propertyBazar = client.db("PropertyBazar");
     const propertiesCollection = propertyBazar.collection('allProperties')
     const usersCollection = propertyBazar.collection('users')
+    const wishCollection = propertyBazar.collection('wishes')
 
 
     //post api
@@ -48,78 +49,65 @@ async function run() {
       res.json(result)
     })
 
-    app.get('/chk', async (req, res) => {
-      const cursor = { category: 'For Sell' }
-      const query = propertiesCollection.find(cursor)
-      const result = await query.toArray();
+    // save user
+    app.post('/saveUser', async (req, res) => {
+      const user = req.body
+      const filter = { email: user.email }
+      const updateDoc = { $set: { name: user.name } }
+      const option = { upsert: true }
+      const result = await usersCollection.updateOne(filter, updateDoc, option);
+      res.json(result);
+    })
+
+    // user post
+    app.get('/userPosts/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { user: email }
+      const result = await propertiesCollection.find(query).toArray();
+      res.json(result);
+    })
+
+    // delete user post
+    app.post('/deletePost', async (req, res) => {
+      const id = req.body
+      const filter = { _id: ObjectId(id) }
+      const result = await propertiesCollection.deleteOne(filter);
       res.json(result)
     })
 
-    // get selected property 
-    app.get('/selectedItem/:id', async (req, res) => {
-      const id = req.params.id
-      const query = { _id: ObjectId(id) }
-      const result = await propertiesCollection.findOne(query);
+    // add wish list 
+    app.post('/addWish', async (req, res) => {
+      const data = req.body
+      const filter = { id: data.id }
+      const updateDoc = {
+        $set: {
+          user: data.user,
+          price: data.price,
+          name: data.name,
+          category: data.category,
+          PropertyType: data.PropertyType
+        }
+      }
+      const option = { upsert: true }
+      const result = await wishCollection.updateOne(filter, updateDoc, option);
+      res.json(result);
+    })
+
+    // user wish
+    app.get('/getWish/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { user: email }
+      const result = await wishCollection.find(query).toArray();
+      res.json(result);
+    })
+
+    // delete user post
+    app.post('/deleteWish', async (req, res) => {
+      const id = req.body
+      const filter = { _id: ObjectId(id) }
+      const result = await wishCollection.deleteOne(filter);
       res.json(result)
     })
-    // get selected property 
-    app.get('/users', async (req, res) => {
-      const id = req.params.id
-      const query = { _id: ObjectId(id) }
-      const result = await propertiesCollection.findOne(query);
-      res.json(result)
-    })
-    // get selected property 
-    app.get('/UserWishList', async (req, res) => {
-      const id = req.params.id
-      const query = { _id: ObjectId(id) }
-      const result = await propertiesCollection.find(query);
-      res.json(result)
-    })
-    // get selected property 
-    app.get('/usersRequest', async (req, res) => {
-      const id = req.params.id
-      const query = { _id: ObjectId(id) }
-      const result = await propertiesCollection.find(query);
-      res.json(result)
-    })
-    
-    // get selected property 
-    app.get('/usersPost', async (req, res) => {
-      const id = req.params.id
-      const query = { _id: ObjectId(id) }
-      const result = await propertiesCollection.find(query);
-      res.json(result)
-    })
-    // get selected property 
-    app.get('/allPost', async (req, res) => {
-      const id = req.params.id
-      const query = { _id: ObjectId(id) }
-      const result = await propertiesCollection.find(query);
-      res.json(result)
-    })
-    // get selected property 
-    app.get('/allRequest', async (req, res) => {
-        const email = req.body
-        const query = { email : email }
-      const result = await propertiesCollection.find(query);
-      res.json(result)
-    })
-    // get selected property 
-    app.post('/allWishList', async (req, res) => {
-      const email = req.body
-      const query = { email : email }
-      const result = await propertiesCollection.find(query);
-      res.json(result)
-    })
-    // get selected property 
-    app.get('/allUser', async (req, res) => {
-      const id = req.params.id
-      const query = { _id: ObjectId(id) }
-      const result = await propertiesCollection.find(query);
-      res.json(result)
-    })
-    
 
 
   } finally {
