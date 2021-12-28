@@ -48,7 +48,13 @@ async function run() {
       const result = await query.toArray();
       res.json(result)
     })
-
+    // get selected property 
+    app.get('/selectedItem/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const result = await propertiesCollection.findOne(query);
+      res.json(result)
+    })
     // save user
     app.post('/saveUser', async (req, res) => {
       const user = req.body
