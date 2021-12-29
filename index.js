@@ -22,8 +22,7 @@ async function run() {
     const propertiesCollection = propertyBazar.collection('allProperties')
     const usersCollection = propertyBazar.collection('users')
     const wishCollection = propertyBazar.collection('wishes')
-
-
+    const msgCollection = propertyBazar.collection('messages')
     //post api
     app.post('/post', async (req, res) => {
       const properties = req.body;
@@ -64,7 +63,27 @@ async function run() {
       const result = await usersCollection.updateOne(filter, updateDoc, option);
       res.json(result);
     })
-
+    // get all user
+    app.get('/allUsers', async (req, res) => {
+      const query = usersCollection.find({})
+      const result = await query.toArray();
+      res.json(result)
+    })
+    // get all user
+    app.get('/checkUsers/:email', async (req, res) => {
+      const email = req.params.email;
+      const filter = {email: email}
+      const query = usersCollection.find(filter)
+      const result = await query.toArray();
+      res.json(result)
+    })
+    //delete user
+    app.get('/deleteUser', async (req, res) => {
+      const id = req.body
+      const filter = { _id: ObjectId(id) }
+      const result = await usersCollection.deleteOne(filter);
+      res.json(result)
+    })
     // user post
     app.get('/userPosts/:email', async (req, res) => {
       const email = req.params.email;
@@ -84,21 +103,16 @@ async function run() {
     // add wish list 
     app.post('/addWish', async (req, res) => {
       const data = req.body
-      const filter = { id: data.id }
-      const updateDoc = {
-        $set: {
-          user: data.user,
-          price: data.price,
-          name: data.name,
-          category: data.category,
-          PropertyType: data.PropertyType
-        }
-      }
-      const option = { upsert: true }
-      const result = await wishCollection.updateOne(filter, updateDoc, option);
+      const result = await wishCollection.insertOne(data);
       res.json(result);
     })
 
+    // user all wish
+    app.get('/getAllWish', async (req, res) => {
+      const query = wishCollection.find({})
+      const result = await query.toArray();
+      res.json(result)
+    })
     // user wish
     app.get('/getWish/:email', async (req, res) => {
       const email = req.params.email;
@@ -112,6 +126,33 @@ async function run() {
       const id = req.body
       const filter = { _id: ObjectId(id) }
       const result = await wishCollection.deleteOne(filter);
+      res.json(result)
+    })
+
+    // add message
+    app.post('/addMsg', async (req, res) => {
+      const data = req.body
+      const result = await msgCollection.insertOne(data);
+      res.json(result);
+    })
+    // get message
+    app.get('/getMsg/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { from: email }
+      const result = await msgCollection.find(query).toArray();
+      res.json(result);
+    })
+    // get all message
+    app.get('/getAllMsg', async (req, res) => {
+      const query = msgCollection.find({})
+      const result = await query.toArray();
+      res.json(result)
+    })
+    // delete user message
+    app.post('/deleteMsg', async (req, res) => {
+      const id = req.body
+      const filter = { _id: ObjectId(id) }
+      const result = await msgCollection.deleteOne(filter);
       res.json(result)
     })
 
