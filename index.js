@@ -72,7 +72,7 @@ async function run() {
     // get all user
     app.get('/checkUsers/:email', async (req, res) => {
       const email = req.params.email;
-      const filter = {email: email}
+      const filter = { email: email }
       const query = usersCollection.find(filter)
       const result = await query.toArray();
       res.json(result)
@@ -157,6 +157,26 @@ async function run() {
     })
 
 
+    app.get('/filterProperty', async (req, res) => {
+      // ===filter by word
+      // const chck = await propertiesCollection.createIndex({ title: "text" })
+      // let filter = {
+      //   $text: { $search: "super", $caseSensitive: false }
+      // }
+      let val = 'for sell'
+      const query = propertiesCollection.find({
+        // filter by letter and word
+        $or: [
+          { title: { $regex: val, $options: 'i' } },
+          { PropertyType: { $regex: val, $options: 'i' } },
+          { category: { $regex: val, $options: 'i' } },
+          { PropertyType: { $regex: val, $options: 'i' } },
+        ]
+      })
+      const result = await query.toArray();
+      console.log(result);
+      res.json(result)
+    })
   } finally {
 
   }
