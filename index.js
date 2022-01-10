@@ -199,7 +199,7 @@ async function run() {
           ...filter, ...query
         }
       }
-      // delete price range properties from filter this property comes to set price range not directly pass filter object
+      // delete price range properties from filter this property comes to set price range not directly pass into filter object
       delete filter.priceRange
       console.log(filter);
       const result = await propertiesCollection.find(filter).toArray();
