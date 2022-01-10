@@ -156,35 +156,62 @@ async function run() {
       res.json(result)
     })
 
-
-    app.get('/filterProperty', async (req, res) => {
+    app.post('/serachProperties', async (req, res) => {
       // ===filter by word
       // const chck = await propertiesCollection.createIndex({ title: "text" })
       // let filter = {
       //   $text: { $search: "super", $caseSensitive: false }
       // }
-      let val = 'for sell'
+      const val = req.body.searchKeyword.toString()
+      console.log(val);
       const query = propertiesCollection.find({
-        // filter by letter and word
+        // filter by letter and word 
         $or: [
           { title: { $regex: val, $options: 'i' } },
           { PropertyType: { $regex: val, $options: 'i' } },
           { category: { $regex: val, $options: 'i' } },
           { PropertyType: { $regex: val, $options: 'i' } },
+          { propertySize: { $regex: val, $options: 'i' } },
+          { district: { $regex: val, $options: 'i' } },
+          { upozila: { $regex: val, $options: 'i' } },
+          { village: { $regex: val, $options: 'i' } },
+          { streetNo: { $regex: val, $options: 'i' } },
         ]
       })
       const result = await query.toArray();
       console.log(result);
       res.json(result)
     })
+
+   // filter by category
+    app.post('/filter', async (req, res) => {
+      const query = req.body;
+      // add price range to filter
+      let filter = {
+        $and: [
+          { price: { $lt: query.priceRange[1] } },
+          { price: { $gte: query.priceRange[0] } },
+        ],
+      }
+      // add category to filter
+      if(query.category || query.PropertyType || query.district){
+        filter = {
+          ...filter, ...query
+        }
+      }
+      // delete price range properties from filter this property comes to set price range not directly pass filter object
+      delete filter.priceRange
+      console.log(filter);
+      const result = await propertiesCollection.find(filter).toArray();
+      res.json(result)
+    })
+
+
   } finally {
 
   }
 }
 run().catch(console.dir);
-
-
-
 
 app.get('/', (req, res) => {
   res.send('hello')
