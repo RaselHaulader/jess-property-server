@@ -26,13 +26,14 @@ async function run() {
     //post api
     app.post('/post', async (req, res) => {
       const properties = req.body;
+      properties.price = parseInt(properties.price);
       const result = await propertiesCollection.insertOne(properties);
       res.json(result)
     })
     // get 3 properties
     app.get('/allProperties3', async (req, res) => {
       const query = propertiesCollection.find({})
-      const result = await query.sort({ date: 'descending' }).limit(3).toArray();
+      const result = await query.sort({ date: 'ascending' }).limit(3).toArray();
       res.json(result)
     })
     // get 4 properties
@@ -183,7 +184,7 @@ async function run() {
       res.json(result)
     })
 
-   // filter by category
+    // filter by category
     app.post('/filter', async (req, res) => {
       const query = req.body;
       // add price range to filter
@@ -194,11 +195,12 @@ async function run() {
         ],
       }
       // add category to filter
-      if(query.category || query.PropertyType || query.district){
+      if (query.category || query.PropertyType || query.district) {
         filter = {
           ...filter, ...query
         }
       }
+
       // delete price range properties from filter this property comes to set price range not directly pass into filter object
       delete filter.priceRange
       console.log(filter);
